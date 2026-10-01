@@ -223,16 +223,16 @@ Decision: stay on Tailwind v3 and ESLint 8/`.eslintrc.json` (already working wit
 
 **Steps**
 
-- [ ] 1.1 Create branch; run `npm install`; commit the generated `package-lock.json`; add `engines: { node: ">=20" }` and `.nvmrc` (`20`); update README prerequisites.
-- [ ] 1.2 Confirm baseline: `npm run lint`, `npm run type-check`, `npm run build` all run on the untouched scaffold; record any pre-existing failures in the PR description.
-- [ ] 1.3 Harden `tsconfig.json`: `target`/`lib` ES2022, remove `allowImportingTsExtensions` and `useDefineForClassFields`, add `plugins: [{ "name": "next" }]`, `incremental`, `allowJs: false`, and add `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noImplicitReturns`, `forceConsistentCasingInFileNames`.
-- [ ] 1.4 Extend `.eslintrc.json` (keep `next/core-web-vitals`, add `plugin:@typescript-eslint/strict-type-checked`, `prettier`). Required rules, all `error`: `@typescript-eslint/no-explicit-any`, `@typescript-eslint/consistent-type-assertions` with `assertionStyle: "never"` (`as const` still allowed), `@typescript-eslint/no-non-null-assertion`, `@typescript-eslint/switch-exhaustiveness-check`, `@typescript-eslint/no-floating-promises`, `@typescript-eslint/consistent-type-imports`, `no-console` (warn). Set `parserOptions.project`.
-- [ ] 1.5 Add Prettier config and scripts: `format`, `format:check`; add `"test": "vitest run"`, `"test:watch": "vitest"`; keep `type-check`; add `"verify": "npm run lint && npm run type-check && npm test && npm run build"`.
-- [ ] 1.6 Add `vitest.config.ts` (jsdom env for `tests/components`, node env for `tests/unit`, `@/` alias, setup file with jest-dom) and a trivial passing smoke test to prove the harness.
-- [ ] 1.7 Fix `app/layout.tsx`: move `viewport` to `export const viewport: Viewport`; keep metadata; remove redundant global `* { margin:0; padding:0 }` from `globals.css` (Tailwind preflight already resets); extend Tailwind `content` globs to `./lib/**`, `./types/**` only if class names ever appear there (otherwise leave).
-- [ ] 1.8 Write **`AGENTS.md`** at the repo root (see 4.1.1 for required content).
-- [ ] 1.9 Create the empty target folders only where files will land in Phase 2 (`lib/`, `tests/`); do not add placeholder files.
-- [ ] 1.10 Update `README.md` (structure, scripts, Node version, remove "implement /api/evaluate-risk", link `AGENTS.md` and this plan).
+- [x] 1.1 Create branch; run `npm install`; commit the generated `package-lock.json`; add `engines: { node: ">=20" }` and `.nvmrc` (`20`); update README prerequisites.
+- [x] 1.2 Confirm baseline: `npm run lint`, `npm run type-check`, `npm run build` all run on the untouched scaffold; record any pre-existing failures in the PR description.
+- [x] 1.3 Harden `tsconfig.json`: `target`/`lib` ES2022, remove `allowImportingTsExtensions` and `useDefineForClassFields`, add `plugins: [{ "name": "next" }]`, `incremental`, `allowJs: false`, and add `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noImplicitReturns`, `forceConsistentCasingInFileNames`.
+- [x] 1.4 Extend `.eslintrc.json` (keep `next/core-web-vitals`, add `plugin:@typescript-eslint/strict-type-checked`, `prettier`). Required rules, all `error`: `@typescript-eslint/no-explicit-any`, `@typescript-eslint/consistent-type-assertions` with `assertionStyle: "never"` (`as const` still allowed), `@typescript-eslint/no-non-null-assertion`, `@typescript-eslint/switch-exhaustiveness-check`, `@typescript-eslint/no-floating-promises`, `@typescript-eslint/consistent-type-imports`, `no-console` (warn). Set `parserOptions.project`.
+- [x] 1.5 Add Prettier config and scripts: `format`, `format:check`; add `"test": "vitest run"`, `"test:watch": "vitest"`; keep `type-check`; add `"verify": "npm run lint && npm run type-check && npm test && npm run build"`.
+- [x] 1.6 Add `vitest.config.ts` (jsdom env for `tests/components`, node env for `tests/unit`, `@/` alias, setup file with jest-dom) and a trivial passing smoke test to prove the harness.
+- [x] 1.7 Fix `app/layout.tsx`: move `viewport` to `export const viewport: Viewport`; keep metadata; remove redundant global `* { margin:0; padding:0 }` from `globals.css` (Tailwind preflight already resets); extend Tailwind `content` globs to `./lib/**`, `./types/**` only if class names ever appear there (otherwise leave).
+- [x] 1.8 Write **`AGENTS.md`** at the repo root (see 4.1.1 for required content).
+- [x] 1.9 Create the empty target folders only where files will land in Phase 2 (`lib/`, `tests/`); do not add placeholder files.
+- [x] 1.10 Update `README.md` (structure, scripts, Node version, remove "implement /api/evaluate-risk", link `AGENTS.md` and this plan).
 
 #### 4.1.1 `AGENTS.md` required content
 
@@ -266,11 +266,11 @@ Decision: stay on Tailwind v3 and ESLint 8/`.eslintrc.json` (already working wit
 
 **Acceptance criteria - Phase 1**
 
-- [ ] Fresh clone: `npm ci && npm run verify` succeeds (lockfile committed).
-- [ ] `tsc` reports zero errors with the strict flags in 1.3; the Next build emits no `viewport`-in-metadata warning.
-- [ ] A deliberately introduced `any`, `x as Foo`, `value!` and a non-exhaustive `switch` each fail `npm run lint` (verify locally, then remove the probe).
-- [ ] `npm test` runs and passes the smoke test.
-- [ ] `AGENTS.md` exists at the repo root and contains all 8 sections above; no `CLAUDE.md` exists; README links to `AGENTS.md`.
+- [x] Fresh clone: `npm ci && npm run verify` succeeds (lockfile committed).
+- [x] `tsc` reports zero errors with the strict flags in 1.3; the Next build emits no `viewport`-in-metadata warning.
+- [x] A deliberately introduced `any`, `x as Foo`, `value!` and a non-exhaustive `switch` each fail `npm run lint` (verify locally, then remove the probe).
+- [x] `npm test` runs and passes the smoke test.
+- [x] `AGENTS.md` exists at the repo root and contains all 8 sections above; no `CLAUDE.md` exists; README links to `AGENTS.md`.
 
 ---
 
@@ -431,7 +431,7 @@ Decision: stay on Tailwind v3 and ESLint 8/`.eslintrc.json` (already working wit
 
 ## 5. Cross-phase roadmap (condensed)
 
-- [ ] **P1** Setup: lockfile, tsconfig/ESLint hardening, test harness, `AGENTS.md`, README
+- [x] **P1** Setup: lockfile, tsconfig/ESLint hardening, test harness, `AGENTS.md`, README
 - [ ] **P2** Types & data: `types/loan.ts`, schema + `parseLoanFormData`, finance, mock `assessCredit`, unit tests
 - [ ] **P3** Forms: Server Action, `SubmitButton` (`useFormStatus`), conditional fields, `useActionState`, `useOptimistic`, rewrite flat components
 - [ ] **P4** Streaming: spike, `use()` + `<Suspense>` + skeleton + error boundary, abort/timeout path

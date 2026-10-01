@@ -16,19 +16,21 @@ An interactive financial tool where users input financial data, select a loan ca
 - **UI**: React 19
 - **Styling**: Tailwind CSS
 - **Language**: TypeScript
-- **Node**: v18+
+- **Node**: v20+
+- **Validation**: Zod
+- **Testing**: Vitest + Testing Library
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18 or higher
-- npm or yarn
+- Node.js 20 or higher (see `.nvmrc`)
+- npm
 
 ### Installation
 
 ```bash
-npm install
+npm ci
 ```
 
 ### Development
@@ -50,11 +52,11 @@ npm start
 
 ```
 .
-├── app/                    # Next.js app directory
+├── AGENTS.md              # Coding standards, type rules, component constraints
+├── app/                   # Next.js app directory
 │   ├── layout.tsx         # Root layout
 │   ├── page.tsx           # Home page
-│   ├── globals.css        # Global styles
-│   └── api/               # API routes (to be added)
+│   └── globals.css        # Global styles
 ├── components/            # React components
 │   ├── Calculator.tsx     # Main calculator component
 │   ├── LoanForm.tsx       # Loan input form
@@ -62,32 +64,36 @@ npm start
 │   └── RepaymentSchedule.tsx # Schedule display
 ├── types/                 # TypeScript type definitions
 │   └── index.ts
+├── tests/                 # Vitest tests (unit/ in node, components/ in jsdom)
+├── docs/
+│   └── implementation-plan.md # Phased implementation plan
+├── vitest.config.ts       # Test runner configuration
 ├── tailwind.config.ts     # Tailwind configuration
 ├── tsconfig.json          # TypeScript configuration
-└── package.json           # Dependencies
+└── package.json           # Dependencies and scripts
 ```
+
+The target structure (`lib/`, `components/form/`, `components/results/`, Server Actions) is described in
+[`docs/implementation-plan.md`](docs/implementation-plan.md) and is added phase by phase.
 
 ## Development
 
-### Linting
+Conventions for contributors and coding agents are in [`AGENTS.md`](AGENTS.md).
 
-```bash
-npm run lint
-```
-
-### Type Checking
-
-```bash
-npm run type-check
-```
+| Script                                    | Purpose                                                      |
+| ----------------------------------------- | ------------------------------------------------------------ |
+| `npm run dev`                             | Start the dev server                                         |
+| `npm run lint`                            | ESLint (type-aware, strict)                                  |
+| `npm run type-check`                      | `tsc --noEmit`                                               |
+| `npm test`                                | Run unit and component tests (`npm run test:watch` to watch) |
+| `npm run format` / `npm run format:check` | Prettier                                                     |
+| `npm run verify`                          | Lint + type-check + test + build (the release gate)          |
 
 ## Next Steps
 
-- Implement the `/api/evaluate-risk` endpoint for streaming risk evaluation
-- Add more sophisticated risk calculation algorithms
-- Integrate with real financial data sources
-- Add user persistence with database
-- Implement authentication
+Work is tracked phase by phase in [`docs/implementation-plan.md`](docs/implementation-plan.md):
+type system and data layer, Server Action forms, streamed risk assessment (React 19 `use()` +
+`<Suspense>`), and the testing/verification checklist.
 
 ## License
 

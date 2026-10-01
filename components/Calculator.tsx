@@ -72,17 +72,15 @@ export default function Calculator() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-          Loan Information
-        </h2>
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <div className="rounded-lg bg-white p-8 shadow-lg">
+        <h2 className="mb-6 text-2xl font-semibold text-gray-900">Loan Information</h2>
         <LoanForm onCalculate={handleCalculate} isLoading={loading} />
       </div>
 
       <div className="space-y-8">
         {loading && (
-          <div className="bg-blue-50 rounded-lg shadow p-8 text-center">
+          <div className="rounded-lg bg-blue-50 p-8 text-center shadow">
             <p className="text-blue-900">Evaluating your credit risk...</p>
           </div>
         )}
