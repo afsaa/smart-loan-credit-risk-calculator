@@ -3,6 +3,12 @@
 import { useState } from 'react';
 import type { LoanData, LoanCategory } from '@/types';
 
+const LOAN_CATEGORIES: readonly LoanCategory[] = ['Mortgage', 'Personal', 'Auto'];
+
+function isLoanCategory(value: string): value is LoanCategory {
+  return LOAN_CATEGORIES.some((category) => category === value);
+}
+
 interface LoanFormProps {
   onCalculate: (data: LoanData) => void;
   isLoading: boolean;
@@ -18,17 +24,18 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
     employmentStatus: 'Employed',
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === 'category' ? (value as LoanCategory) : Number(value),
-    });
+    if (name === 'category') {
+      if (isLoanCategory(value)) {
+        setFormData({ ...formData, category: value });
+      }
+      return;
+    }
+    setFormData({ ...formData, [name]: Number(value) });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     onCalculate(formData);
   };
@@ -36,14 +43,12 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Loan Category
-        </label>
+        <label className="mb-2 block text-sm font-medium text-gray-700">Loan Category</label>
         <select
           name="category"
           value={formData.category}
           onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2"
           disabled={isLoading}
         >
           <option value="Mortgage">Mortgage</option>
@@ -53,7 +58,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Loan Amount: ${formData.amount.toLocaleString()}
         </label>
         <input
@@ -70,7 +75,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Annual Income: ${formData.annualIncome.toLocaleString()}
         </label>
         <input
@@ -87,7 +92,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Credit Score: {formData.creditScore}
         </label>
         <input
@@ -104,7 +109,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Loan Term (years): {formData.loanTerm}
         </label>
         <input
@@ -121,14 +126,12 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Employment Status
-        </label>
+        <label className="mb-2 block text-sm font-medium text-gray-700">Employment Status</label>
         <select
           name="employmentStatus"
           value={formData.employmentStatus}
           onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2"
           disabled={isLoading}
         >
           <option value="Employed">Employed</option>
@@ -140,7 +143,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+        className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
       >
         {isLoading ? 'Calculating...' : 'Calculate Risk & Schedule'}
       </button>
