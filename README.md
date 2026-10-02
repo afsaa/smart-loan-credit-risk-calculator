@@ -33,6 +33,8 @@ An interactive financial tool where users input financial data, select a loan ca
 npm ci
 ```
 
+`.npmrc` pins this repo to the public npm registry, so a user-level private registry does not intercept the install.
+
 ### Development
 
 ```bash
