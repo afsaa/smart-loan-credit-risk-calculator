@@ -66,10 +66,11 @@ npm start
 │   └── RepaymentSchedule.tsx # Schedule display
 ├── types/                 # TypeScript type definitions
 │   └── index.ts
-├── tests/                 # Vitest tests (unit/ in node, components/ in jsdom)
+├── tests/                 # unit/ (node), components/ (jsdom), e2e/ (Playwright)
 ├── docs/
 │   └── implementation-plan.md # Phased implementation plan
 ├── vitest.config.ts       # Test runner configuration
+├── playwright.config.ts   # Playwright (e2e) configuration
 ├── tailwind.config.ts     # Tailwind configuration
 ├── tsconfig.json          # TypeScript configuration
 └── package.json           # Dependencies and scripts
@@ -82,14 +83,15 @@ The target structure (`lib/`, `components/form/`, `components/results/`, Server 
 
 Conventions for contributors and coding agents are in [`AGENTS.md`](AGENTS.md).
 
-| Script                                    | Purpose                                                      |
-| ----------------------------------------- | ------------------------------------------------------------ |
-| `npm run dev`                             | Start the dev server                                         |
-| `npm run lint`                            | ESLint (type-aware, strict)                                  |
-| `npm run type-check`                      | `tsc --noEmit`                                               |
-| `npm test`                                | Run unit and component tests (`npm run test:watch` to watch) |
-| `npm run format` / `npm run format:check` | Prettier                                                     |
-| `npm run verify`                          | Lint + type-check + test + build (the release gate)          |
+| Script                                    | Purpose                                                                                   |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `npm run dev`                             | Start the dev server                                                                      |
+| `npm run lint`                            | ESLint (type-aware, strict)                                                               |
+| `npm run type-check`                      | `tsc --noEmit`                                                                            |
+| `npm test`                                | Run unit and component tests (`npm run test:watch` to watch)                              |
+| `npm run test:e2e`                        | Playwright browser smoke tests (needs `npx playwright install --with-deps chromium` once) |
+| `npm run format` / `npm run format:check` | Prettier                                                                                  |
+| `npm run verify`                          | Lint + type-check + test + build (the release gate)                                       |
 
 ## Next Steps
 

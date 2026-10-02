@@ -129,6 +129,8 @@ Legend: `[exists]` kept as-is or edited, `[rewrite]` exists but is fully replace
 ├── tsconfig.json                               [edit] ES2022, next plugin, extra strict flags
 ├── vitest.config.ts                            [new]
 ├── vitest.setup.ts                             [new]
+├── playwright.config.ts                        [new]  P1: chromium, builds + serves on :3100
+├── .prettierignore                             [new]  excludes lockfile, build output, this plan
 ├── docs/
 │   └── implementation-plan.md                  [new]  this file
 ├── app/
@@ -189,7 +191,8 @@ Legend: `[exists]` kept as-is or edited, `[rewrite]` exists but is fully replace
     │   ├── SubmitButton.test.tsx               [new]
     │   ├── LoanForm.test.tsx                   [new]
     │   └── RiskAssessment.test.tsx             [new]
-    └── e2e/                                    [optional, new] Playwright smoke test
+    └── e2e/
+        └── smoke.spec.ts                       [new]  P1: Playwright smoke test (more specs in P5)
 ```
 
 Notes:
@@ -213,25 +216,25 @@ Conventions for the checklists: each step is a PR-sized unit; every phase ends w
 | Dependency | Why |
 | --- | --- |
 | `zod` (runtime) | Boundary parsing of `FormData` into the discriminated union without `as`; `z.discriminatedUnion('loanType', ...)` mirrors the type design |
-| `vitest`, `@vitejs/plugin-react`, `jsdom` (dev) | Unit/component test runner |
+| `vitest@^3`, `@vitejs/plugin-react@^5`, `vite@^7`, `jsdom` (dev) | Unit/component test runner. **Vitest is pinned to 3.x**: Vitest 5 requires `@types/node` >=22, conflicting with the Node 20 target; `vite` is listed explicitly to satisfy the plugin peer (`vite` and `jsdom` in practice need Node `^20.19`, `engines` stays `>=20`) |
 | `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom` (dev) | Component behaviour tests |
 | `@typescript-eslint/eslint-plugin`, `@typescript-eslint/parser` (dev) | Ban `any` and assertions |
 | `prettier`, `eslint-config-prettier`, `prettier-plugin-tailwindcss` (dev) | Formatting |
-| `@playwright/test` (dev, optional) | Browser smoke test of streaming UI |
+| `@playwright/test` (dev) | Browser smoke test of streaming UI; installed and configured in Phase 1 (`playwright.config.ts`, `tests/e2e/smoke.spec.ts`, `npm run test:e2e`), kept out of `verify` because it needs browser binaries (`npx playwright install --with-deps chromium`) |
 
-Decision: stay on Tailwind v3 and ESLint 8/`.eslintrc.json` (already working with Next 15). Upgrading to Tailwind v4 / ESLint 9 flat config is out of scope and tracked as a separate follow-up.
+Decision: use `eslint .` (not `next lint`) for the `lint` script, because `next lint` is deprecated in Next 15 and only covers `app/ components/ lib/ src/` (it would skip `types/`, `tests/` and root configs); `next build` still runs its own lint step. Stay on Tailwind v3 and ESLint 8/`.eslintrc.json` (already working with Next 15). Upgrading to Tailwind v4 / ESLint 9 flat config is out of scope and tracked as a separate follow-up.
 
 **Steps**
 
 - [x] 1.1 Create branch; run `npm install`; commit the generated `package-lock.json`; add `engines: { node: ">=20" }` and `.nvmrc` (`20`); update README prerequisites.
 - [x] 1.2 Confirm baseline: `npm run lint`, `npm run type-check`, `npm run build` all run on the untouched scaffold; record any pre-existing failures in the PR description.
-- [x] 1.3 Harden `tsconfig.json`: `target`/`lib` ES2022, remove `allowImportingTsExtensions` and `useDefineForClassFields`, add `plugins: [{ "name": "next" }]`, `incremental`, `allowJs: false`, and add `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noImplicitReturns`, `forceConsistentCasingInFileNames`.
-- [x] 1.4 Extend `.eslintrc.json` (keep `next/core-web-vitals`, add `plugin:@typescript-eslint/strict-type-checked`, `prettier`). Required rules, all `error`: `@typescript-eslint/no-explicit-any`, `@typescript-eslint/consistent-type-assertions` with `assertionStyle: "never"` (`as const` still allowed), `@typescript-eslint/no-non-null-assertion`, `@typescript-eslint/switch-exhaustiveness-check`, `@typescript-eslint/no-floating-promises`, `@typescript-eslint/consistent-type-imports`, `no-console` (warn). Set `parserOptions.project`.
-- [x] 1.5 Add Prettier config and scripts: `format`, `format:check`; add `"test": "vitest run"`, `"test:watch": "vitest"`; keep `type-check`; add `"verify": "npm run lint && npm run type-check && npm test && npm run build"`.
-- [x] 1.6 Add `vitest.config.ts` (jsdom env for `tests/components`, node env for `tests/unit`, `@/` alias, setup file with jest-dom) and a trivial passing smoke test to prove the harness.
+- [x] 1.3 Harden `tsconfig.json`: `target`/`lib` ES2022, remove `allowImportingTsExtensions` and `useDefineForClassFields`, add `plugins: [{ "name": "next" }]`, `incremental`, `allowJs: false`, `jsx: "preserve"` (mandatory in Next; it rewrites `react-jsx` on every build), and add `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noImplicitReturns`, `forceConsistentCasingInFileNames`.
+- [x] 1.4 Extend `.eslintrc.json` (keep `next/core-web-vitals`, add `plugin:@typescript-eslint/strict-type-checked`, `prettier`). Required rules, all `error`: `@typescript-eslint/no-explicit-any`, `@typescript-eslint/consistent-type-assertions` with `assertionStyle: "never"` (`as const` still allowed), `@typescript-eslint/no-non-null-assertion`, `@typescript-eslint/switch-exhaustiveness-check`, `@typescript-eslint/no-floating-promises`, `@typescript-eslint/consistent-type-imports`, `no-console` (warn). Set `parserOptions.project`. The `lint` script is `eslint . --max-warnings=0`. *Deviation:* a temporary per-file `overrides` entry relaxes four non-`any`/non-assertion rules (`no-unnecessary-condition`, `no-unsafe-assignment`, `no-misused-promises`, `no-console`) for legacy `components/Calculator.tsx`, which is deleted in 3.7; the override must be removed in that change. `LoanForm.tsx` / `RepaymentSchedule.tsx` received minimal lint fixes in Phase 1 (type guard instead of `as`, braces on a void arrow) and are rewritten in Phase 3.
+- [x] 1.5 Add Prettier config and scripts: `format`, `format:check`; add `"test": "vitest run"`, `"test:watch": "vitest"`; keep `type-check`; add `"verify": "npm run lint && npm run type-check && npm test && npm run build"`; add `"test:e2e": "playwright test"` (not part of `verify`). Prettier was applied repo-wide to existing source; `docs/implementation-plan.md` is in `.prettierignore` to keep its diff to checkbox changes.
+- [x] 1.6 Add `vitest.config.ts` (jsdom env for `tests/components`, node env for `tests/unit`, `@/` alias, setup file with jest-dom) and trivial passing smoke tests to prove the harness (`tests/unit/smoke.test.ts`, `tests/components/smoke.test.tsx`). Also set up Playwright: `playwright.config.ts` (chromium, `testDir: tests/e2e`, web server = `npm run build` + `next start` on port 3100) and `tests/e2e/smoke.spec.ts` (page shell renders; select fields show no focus ring).
 - [x] 1.7 Fix `app/layout.tsx`: move `viewport` to `export const viewport: Viewport`; keep metadata; remove redundant global `* { margin:0; padding:0 }` from `globals.css` (Tailwind preflight already resets); extend Tailwind `content` globs to `./lib/**`, `./types/**` only if class names ever appear there (otherwise leave).
 - [x] 1.8 Write **`AGENTS.md`** at the repo root (see 4.1.1 for required content).
-- [x] 1.9 Create the empty target folders only where files will land in Phase 2 (`lib/`, `tests/`); do not add placeholder files.
+- [x] 1.9 Create the empty target folders only where files will land in Phase 2 (`lib/`, `tests/`); do not add placeholder files. *Deviation:* `lib/` is not created in Phase 1 (git cannot track an empty folder); it appears with the first Phase 2 file. `tests/` exists via the smoke tests.
 - [x] 1.10 Update `README.md` (structure, scripts, Node version, remove "implement /api/evaluate-risk", link `AGENTS.md` and this plan).
 
 #### 4.1.1 `AGENTS.md` required content

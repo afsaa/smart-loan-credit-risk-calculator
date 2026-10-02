@@ -16,6 +16,7 @@ repayment summary plus a streamed (mock, illustrative) credit risk assessment.
   - `npm run dev` - dev server on http://localhost:3000
   - `npm run verify` - lint + type-check + test + build (the gate)
   - `npm test` / `npm run test:watch` - Vitest (`tests/unit` runs in node, `tests/components` in jsdom)
+  - `npm run test:e2e` - Playwright smoke tests (first run: `npx playwright install --with-deps chromium`; not part of `verify`)
   - `npm run lint`, `npm run type-check`, `npm run format` / `npm run format:check`
 
 ### Layout
@@ -25,7 +26,7 @@ app/          routes, layout, Server Actions (app/actions)
 components/   React components (form/, results/, ui/ subfolders)
 lib/          framework-free domain code: finance/, credit/, validation/, utils/
 types/        shared types (types/loan.ts holds the discriminated unions)
-tests/        unit/ (node), components/ (jsdom), e2e/ (optional Playwright)
+tests/        unit/ (node), components/ (jsdom), e2e/ (Playwright)
 docs/         implementation plan and other documentation
 ```
 
