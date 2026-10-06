@@ -34,22 +34,18 @@ const getRiskBadgeColor = (level: string) => {
 
 export default function RiskEvaluation({ result }: RiskEvaluationProps) {
   return (
-    <div className={`rounded-lg shadow border-2 p-8 ${getRiskColor(result.level)}`}>
-      <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-        Credit Risk Evaluation
-      </h2>
+    <div className={`rounded-lg border-2 p-8 shadow ${getRiskColor(result.level)}`}>
+      <h2 className="mb-4 text-2xl font-semibold text-gray-900">Credit Risk Evaluation</h2>
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-gray-600 text-sm mb-2">Risk Score</p>
-          <p className="text-5xl font-bold text-gray-900">
-            {result.score.toFixed(1)}
-          </p>
+          <p className="mb-2 text-sm text-gray-600">Risk Score</p>
+          <p className="text-5xl font-bold text-gray-900">{result.score.toFixed(1)}</p>
         </div>
         <div>
           <span
-            className={`px-4 py-2 rounded-full font-semibold text-lg uppercase ${getRiskBadgeColor(
-              result.level
+            className={`rounded-full px-4 py-2 text-lg font-semibold uppercase ${getRiskBadgeColor(
+              result.level,
             )}`}
           >
             {result.level}
@@ -58,13 +54,11 @@ export default function RiskEvaluation({ result }: RiskEvaluationProps) {
       </div>
 
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">
-          Risk Factors
-        </h3>
+        <h3 className="mb-3 text-lg font-semibold text-gray-900">Risk Factors</h3>
         <ul className="space-y-2">
           {result.factors.map((factor, index) => (
             <li key={index} className="flex items-start">
-              <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-gray-300 text-gray-700 text-sm font-semibold mr-3 flex-shrink-0">
+              <span className="mr-3 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-sm font-semibold text-gray-700">
                 {index + 1}
               </span>
               <span className="text-gray-700">{factor}</span>
@@ -73,10 +67,8 @@ export default function RiskEvaluation({ result }: RiskEvaluationProps) {
         </ul>
       </div>
 
-      <div className="p-4 bg-white bg-opacity-50 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Recommendation
-        </h3>
+      <div className="rounded-lg bg-white bg-opacity-50 p-4">
+        <h3 className="mb-2 text-lg font-semibold text-gray-900">Recommendation</h3>
         <p className="text-gray-700">{result.recommendation}</p>
       </div>
     </div>
