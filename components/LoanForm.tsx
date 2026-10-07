@@ -48,7 +48,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
           name="category"
           value={formData.category}
           onChange={handleChange}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2"
+          className="w-full rounded-lg border border-gray-500 focus:outline-none focus:border-2 p-2"
           disabled={isLoading}
         >
           <option value="Mortgage">Mortgage</option>
@@ -131,7 +131,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
           name="employmentStatus"
           value={formData.employmentStatus}
           onChange={handleChange}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2"
+          className="w-full rounded-lg border border-gray-500 focus:outline-none focus:border-2 p-2"
           disabled={isLoading}
         >
           <option value="Employed">Employed</option>
