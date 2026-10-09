@@ -112,6 +112,6 @@ Create folders only when a file lands in them; no placeholder files.
 
 ## Known temporary exceptions
 
-- `components/Calculator.tsx` has an ESLint override (`.eslintrc.json`) because it is the legacy
-  `fetch` + manual-SSE component that violates section 4. It is deleted/rewritten in plan step 3.7;
-  remove the override in the same change.
+- `components/LoanForm.tsx` and `components/Calculator.tsx` are interim shells that still use
+  `onSubmit` + `preventDefault` (section 4) and do not calculate anything; they are rewritten around
+  a Server Action in plan steps 3.6/3.7. No lint overrides remain for them.
