@@ -12,7 +12,7 @@ test.describe('home page smoke test', () => {
   test('select fields have no focus ring', async ({ page }) => {
     await page.goto('/');
 
-    const select = page.locator('select[name="category"]');
+    const select = page.locator('select[name="loanType"]');
     await select.focus();
     await expect(select).toBeFocused();
     await expect(select).toHaveCSS('box-shadow', 'none');

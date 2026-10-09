@@ -2,94 +2,29 @@
 
 import { useState } from 'react';
 import LoanForm from './LoanForm';
-import RiskEvaluation from './RiskEvaluation';
-import RepaymentSchedule from './RepaymentSchedule';
-import type { LoanData, RiskResult } from '@/types';
 
+// Interim shell: submission moves to a Server Action in plan step 3.7, which rewrites this file.
 export default function Calculator() {
-  const [loanData, setLoanData] = useState<LoanData | null>(null);
-  const [riskResult, setRiskResult] = useState<RiskResult | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleCalculate = async (data: LoanData) => {
-    setLoanData(data);
-    setLoading(true);
-    setRiskResult(null);
-
-    try {
-      const response = await fetch('/api/evaluate-risk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) throw new Error('Failed to evaluate risk');
-
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
-
-      let result: RiskResult = {
-        score: 0,
-        level: 'unknown',
-        factors: [],
-        recommendation: '',
-      };
-
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              result = { ...result, ...data };
-              setRiskResult({ ...result });
-            } catch (e) {
-              console.error('Failed to parse stream data:', e);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error evaluating risk:', error);
-      setRiskResult({
-        score: 0,
-        level: 'error',
-        factors: [],
-        recommendation: 'An error occurred while evaluating your risk. Please try again.',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [submitted, setSubmitted] = useState(false);
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <div className="rounded-lg bg-white p-8 shadow-lg">
         <h2 className="mb-6 text-2xl font-semibold text-gray-900">Loan Information</h2>
-        <LoanForm onCalculate={handleCalculate} isLoading={loading} />
+        <LoanForm
+          onCalculate={() => {
+            setSubmitted(true);
+          }}
+        />
       </div>
 
-      <div className="space-y-8">
-        {loading && (
-          <div className="rounded-lg bg-blue-50 p-8 text-center shadow">
-            <p className="text-blue-900">Evaluating your credit risk...</p>
+      <div className="space-y-8" aria-live="polite">
+        {submitted && (
+          <div role="status" className="rounded-lg bg-blue-50 p-8 text-center shadow">
+            <p className="text-blue-900">
+              Calculations are temporarily unavailable while the form is rebuilt on Server Actions.
+            </p>
           </div>
-        )}
-
-        {riskResult && !loading && (
-          <>
-            <RiskEvaluation result={riskResult} />
-            {loanData && <RepaymentSchedule loanData={loanData} />}
-          </>
         )}
       </div>
     </div>
