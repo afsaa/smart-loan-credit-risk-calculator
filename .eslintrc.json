@@ -7,17 +7,6 @@
   },
   "plugins": ["@typescript-eslint"],
   "ignorePatterns": ["node_modules/", ".next/", "coverage/", "next-env.d.ts", "*.config.js"],
-  "overrides": [
-    {
-      "files": ["components/Calculator.tsx"],
-      "rules": {
-        "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/no-misused-promises": "off",
-        "no-console": "off"
-      }
-    }
-  ],
   "rules": {
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "never" }],

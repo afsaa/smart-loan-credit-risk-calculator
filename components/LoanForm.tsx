@@ -1,34 +1,57 @@
 'use client';
 
 import { useState } from 'react';
-import type { LoanData, LoanCategory } from '@/types';
+import { EMPLOYMENT_STATUSES, LOAN_TYPES } from '@/types/loan';
+import type { EmploymentStatus, LoanType } from '@/types/loan';
+import { isEmploymentStatus, isLoanType } from '@/lib/validation/guards';
 
-const LOAN_CATEGORIES: readonly LoanCategory[] = ['Mortgage', 'Personal', 'Auto'];
+const LOAN_TYPE_LABELS = {
+  mortgage: 'Mortgage',
+  personal: 'Personal',
+  auto: 'Auto',
+} as const satisfies Record<LoanType, string>;
 
-function isLoanCategory(value: string): value is LoanCategory {
-  return LOAN_CATEGORIES.some((category) => category === value);
+const EMPLOYMENT_STATUS_LABELS = {
+  employed: 'Employed',
+  self_employed: 'Self-employed',
+  unemployed: 'Unemployed',
+} as const satisfies Record<EmploymentStatus, string>;
+
+// Interim control state; plan step 3.6 replaces this form with `<form action>` + uncontrolled inputs.
+interface LoanFormValues {
+  loanType: LoanType;
+  loanAmount: number;
+  annualIncome: number;
+  creditScore: number;
+  termYears: number;
+  employmentStatus: EmploymentStatus;
 }
 
 interface LoanFormProps {
-  onCalculate: (data: LoanData) => void;
-  isLoading: boolean;
+  onCalculate: () => void;
 }
 
-export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
-  const [formData, setFormData] = useState<LoanData>({
-    amount: 250000,
+export default function LoanForm({ onCalculate }: LoanFormProps) {
+  const [formData, setFormData] = useState<LoanFormValues>({
+    loanType: 'mortgage',
+    loanAmount: 250000,
     annualIncome: 75000,
     creditScore: 700,
-    loanTerm: 30,
-    category: 'Mortgage',
-    employmentStatus: 'Employed',
+    termYears: 30,
+    employmentStatus: 'employed',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (name === 'category') {
-      if (isLoanCategory(value)) {
-        setFormData({ ...formData, category: value });
+    if (name === 'loanType') {
+      if (isLoanType(value)) {
+        setFormData({ ...formData, loanType: value });
+      }
+      return;
+    }
+    if (name === 'employmentStatus') {
+      if (isEmploymentStatus(value)) {
+        setFormData({ ...formData, employmentStatus: value });
       }
       return;
     }
@@ -37,7 +60,7 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onCalculate(formData);
+    onCalculate();
   };
 
   return (
@@ -45,32 +68,32 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">Loan Category</label>
         <select
-          name="category"
-          value={formData.category}
+          name="loanType"
+          value={formData.loanType}
           onChange={handleChange}
           className="w-full rounded-lg border border-gray-500 p-2 focus:border-2 focus:outline-none"
-          disabled={isLoading}
         >
-          <option value="Mortgage">Mortgage</option>
-          <option value="Personal">Personal</option>
-          <option value="Auto">Auto</option>
+          {LOAN_TYPES.map((loanType) => (
+            <option key={loanType} value={loanType}>
+              {LOAN_TYPE_LABELS[loanType]}
+            </option>
+          ))}
         </select>
       </div>
 
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Loan Amount: ${formData.amount.toLocaleString()}
+          Loan Amount: ${formData.loanAmount.toLocaleString()}
         </label>
         <input
           type="range"
-          name="amount"
+          name="loanAmount"
           min="5000"
           max="1000000"
           step="5000"
-          value={formData.amount}
+          value={formData.loanAmount}
           onChange={handleChange}
           className="w-full"
-          disabled={isLoading}
         />
       </div>
 
@@ -87,7 +110,6 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
           value={formData.annualIncome}
           onChange={handleChange}
           className="w-full"
-          disabled={isLoading}
         />
       </div>
 
@@ -104,24 +126,22 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
           value={formData.creditScore}
           onChange={handleChange}
           className="w-full"
-          disabled={isLoading}
         />
       </div>
 
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Loan Term (years): {formData.loanTerm}
+          Loan Term (years): {formData.termYears}
         </label>
         <input
           type="range"
-          name="loanTerm"
+          name="termYears"
           min="5"
           max="30"
           step="1"
-          value={formData.loanTerm}
+          value={formData.termYears}
           onChange={handleChange}
           className="w-full"
-          disabled={isLoading}
         />
       </div>
 
@@ -132,20 +152,20 @@ export default function LoanForm({ onCalculate, isLoading }: LoanFormProps) {
           value={formData.employmentStatus}
           onChange={handleChange}
           className="w-full rounded-lg border border-gray-500 p-2 focus:border-2 focus:outline-none"
-          disabled={isLoading}
         >
-          <option value="Employed">Employed</option>
-          <option value="Self-employed">Self-employed</option>
-          <option value="Unemployed">Unemployed</option>
+          {EMPLOYMENT_STATUSES.map((status) => (
+            <option key={status} value={status}>
+              {EMPLOYMENT_STATUS_LABELS[status]}
+            </option>
+          ))}
         </select>
       </div>
 
       <button
         type="submit"
-        disabled={isLoading}
         className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
       >
-        {isLoading ? 'Calculating...' : 'Calculate Risk & Schedule'}
+        Calculate Risk & Schedule
       </button>
     </form>
   );

@@ -64,8 +64,13 @@ npm start
 │   ├── LoanForm.tsx       # Loan input form
 │   ├── RiskEvaluation.tsx # Risk display component
 │   └── RepaymentSchedule.tsx # Schedule display
-├── types/                 # TypeScript type definitions
-│   └── index.ts
+├── lib/                   # Framework-free domain code (no React/Next imports)
+│   ├── finance/           # Amortization, rates, repayment summary
+│   ├── credit/            # Mock (illustrative) credit scoring + async assessment engine
+│   ├── validation/        # Zod schema, VIN rules, FormData -> LoanApplication parser
+│   └── utils/             # assertNever, abortable sleep, formatters
+├── types/
+│   └── loan.ts            # Discriminated unions (LoanApplication, results, form state)
 ├── tests/                 # unit/ (node), components/ (jsdom), e2e/ (Playwright)
 ├── docs/
 │   └── implementation-plan.md # Phased implementation plan
@@ -76,7 +81,9 @@ npm start
 └── package.json           # Dependencies and scripts
 ```
 
-The target structure (`lib/`, `components/form/`, `components/results/`, Server Actions) is described in
+The domain layer (`lib/`, `types/`) is in place; the form still needs to be wired to it, so submitting
+the form currently shows a placeholder. The remaining structure (`components/form/`,
+`components/results/`, Server Actions) is described in
 [`docs/implementation-plan.md`](docs/implementation-plan.md) and is added phase by phase.
 
 ## Development
