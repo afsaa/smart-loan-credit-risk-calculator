@@ -6,21 +6,13 @@ import {
   type LoanType,
   type Vin,
 } from '@/types/loan';
+import {
+  CREDIT_SCORE_RANGE,
+  LOAN_AMOUNT_RANGE,
+  PROPERTY_ADDRESS_MAX_LENGTH,
+  TERM_MONTHS_RANGE,
+} from '@/lib/validation/limits';
 import { isVin, normalizeVin } from '@/lib/validation/vin';
-
-interface Range {
-  min: number;
-  max: number;
-}
-
-export const LOAN_AMOUNT_RANGE = { min: 1_000, max: 5_000_000 } as const satisfies Range;
-export const CREDIT_SCORE_RANGE = { min: 300, max: 850 } as const satisfies Range;
-export const TERM_MONTHS_RANGE = {
-  mortgage: { min: 120, max: 480 },
-  personal: { min: 12, max: 84 },
-  auto: { min: 12, max: 96 },
-} as const satisfies Record<LoanType, Range>;
-export const PROPERTY_ADDRESS_MAX_LENGTH = 200;
 
 export const LOAN_FIELD_NAMES = [
   'loanType',
