@@ -56,14 +56,19 @@ npm start
 .
 ├── AGENTS.md              # Coding standards, type rules, component constraints
 ├── app/                   # Next.js app directory
+│   ├── actions/           # Server Actions (submitLoanApplication)
 │   ├── layout.tsx         # Root layout
 │   ├── page.tsx           # Home page
+│   ├── error.tsx          # Route error boundary
+│   ├── loading.tsx        # Route loading fallback
 │   └── globals.css        # Global styles
 ├── components/            # React components
-│   ├── Calculator.tsx     # Main calculator component
-│   ├── LoanForm.tsx       # Loan input form
+│   ├── Calculator.tsx     # Owns the form state (useActionState), renders form + results
+│   ├── LoanForm.tsx       # <form action> with type-dependent fields
+│   ├── form/              # Field primitives, field groups, SubmitButton (useFormStatus)
 │   ├── RiskEvaluation.tsx # Risk display component
-│   └── RepaymentSchedule.tsx # Schedule display
+│   ├── RepaymentSchedule.tsx # Repayment summary
+│   └── RepaymentDetails.tsx  # Yearly schedule table
 ├── lib/                   # Framework-free domain code (no React/Next imports)
 │   ├── finance/           # Amortization, rates, repayment summary
 │   ├── credit/            # Mock (illustrative) credit scoring + async assessment engine
@@ -81,10 +86,9 @@ npm start
 └── package.json           # Dependencies and scripts
 ```
 
-The domain layer (`lib/`, `types/`) is in place; the form still needs to be wired to it, so submitting
-the form currently shows a placeholder. The remaining structure (`components/form/`,
-`components/results/`, Server Actions) is described in
-[`docs/implementation-plan.md`](docs/implementation-plan.md) and is added phase by phase.
+The form posts to a Server Action that validates the input and returns the repayment schedule. The
+streamed credit risk assessment (`components/results/`) is the next phase in
+[`docs/implementation-plan.md`](docs/implementation-plan.md).
 
 ## Development
 

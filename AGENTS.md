@@ -73,6 +73,9 @@ Create folders only when a file lands in them; no placeholder files.
   a parent `useState` flag. `useFormStatus` reports idle if called in the component that renders the
   `<form>` itself.
 - Form-level state uses `useActionState`; optimistic UI uses `useOptimistic`.
+- Form inputs are uncontrolled and repopulated from the action's `submittedValues` via `defaultValue`
+  (React resets uncontrolled fields after every action). Only `loanType` is held in state, because it
+  decides which fields are mounted. Input limits come from `lib/validation/limits.ts` (zod-free).
 - Async data is consumed with `use()` inside a component wrapped in `<Suspense>` with a skeleton
   fallback and an error boundary. Promises passed to `use()` are created outside render (in a Server
   Action or cache), never inside the consuming component.
@@ -110,8 +113,7 @@ Create folders only when a file lands in them; no placeholder files.
 - Do not disable the `any` / type-assertion lint rules; tune other rules per-rule when noisy.
 - Do not add a `CLAUDE.md`; this file is the only convention file.
 
-## Known temporary exceptions
+## Known lint overrides
 
-- `components/LoanForm.tsx` and `components/Calculator.tsx` are interim shells that still use
-  `onSubmit` + `preventDefault` (section 4) and do not calculate anything; they are rewritten around
-  a Server Action in plan steps 3.6/3.7. No lint overrides remain for them.
+- `app/actions/**`: `@typescript-eslint/require-await` is off because Next.js requires every exported
+  Server Action to be `async`, even when it has nothing to await.
