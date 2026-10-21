@@ -15,5 +15,13 @@
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/consistent-type-imports": "error",
     "no-console": "warn"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["app/actions/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/require-await": "off"
+      }
+    }
+  ]
 }
