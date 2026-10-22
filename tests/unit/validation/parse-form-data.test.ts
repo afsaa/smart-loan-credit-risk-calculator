@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FieldErrors, LoanFieldName } from '@/types/loan';
-import { parseLoanFormData } from '@/lib/validation/parse-form-data';
+import { parseLoanFormData, readSubmittedValues } from '@/lib/validation/parse-form-data';
 import { VALID_VIN } from '@/tests/unit/fixtures/loan-applications';
 
 type Fields = Record<string, string>;
@@ -190,5 +190,29 @@ describe('parseLoanFormData: hostile FormData', () => {
     expect(() => parseLoanFormData(data)).not.toThrow();
     expect(() => parseLoanFormData(new FormData())).not.toThrow();
     expect(parseLoanFormData(data).ok).toBe(false);
+  });
+});
+
+describe('readSubmittedValues', () => {
+  it('echoes the raw text of every known field, including invalid values', () => {
+    const fields = { ...mortgage, downPayment: 'abc', vehicleVin: 'stray' };
+    expect(readSubmittedValues(formData(fields))).toEqual(fields);
+  });
+
+  it('drops unknown keys and File entries', () => {
+    const data = formData({ loanType: 'personal', unknownField: 'y' });
+    data.append('__proto__', 'x');
+    data.append('loanPurpose', new File(['medical'], 'purpose.txt'));
+    expect(readSubmittedValues(data)).toEqual({ loanType: 'personal' });
+  });
+
+  it('keeps the first text value of a duplicated key', () => {
+    const data = formData({ creditScore: '700' });
+    data.append('creditScore', '800');
+    expect(readSubmittedValues(data)).toEqual({ creditScore: '700' });
+  });
+
+  it('returns an empty object for empty FormData', () => {
+    expect(readSubmittedValues(new FormData())).toEqual({});
   });
 });

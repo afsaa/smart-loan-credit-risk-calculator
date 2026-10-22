@@ -114,13 +114,20 @@ export type FieldErrors = Partial<Record<LoanFieldName, readonly string[]>>;
 
 export type SubmittedValues = Partial<Record<LoanFieldName, string>>;
 
+/**
+ * `submittedValues` is echoed on both outcomes because React resets uncontrolled form fields after
+ * every action; the form uses them as `defaultValue`s so the user's input survives the reset.
+ */
 export type FormState =
   | { status: 'idle' }
   | { status: 'error'; fieldErrors: FieldErrors; submittedValues: SubmittedValues }
   | {
       status: 'success';
       submissionId: string;
+      submittedValues: SubmittedValues;
       application: LoanApplication;
       summary: RepaymentSummary;
       assessment: Promise<AssessmentResult>;
     };
+
+export const initialFormState: FormState = { status: 'idle' };

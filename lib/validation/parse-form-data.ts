@@ -1,7 +1,8 @@
-import type { FieldErrors, LoanApplication, LoanFieldName } from '@/types/loan';
+import type { FieldErrors, LoanApplication, LoanFieldName, SubmittedValues } from '@/types/loan';
 import { isLoanType } from '@/lib/validation/guards';
 import {
   isLoanFieldName,
+  LOAN_FIELD_NAMES,
   loanApplicationSchema,
   loanFieldsFor,
 } from '@/lib/validation/loan-schema';
@@ -78,4 +79,21 @@ export function parseLoanFormData(formData: FormData): ParseResult {
     }
   }
   return { ok: false, fieldErrors };
+}
+
+/**
+ * The raw text the user submitted for each known loan field, used to repopulate the form.
+ * Unknown keys and `File` entries are dropped; for duplicated keys the first text value wins.
+ */
+export function readSubmittedValues(formData: FormData): SubmittedValues {
+  const values: SubmittedValues = {};
+  for (const field of LOAN_FIELD_NAMES) {
+    const value = formData
+      .getAll(field)
+      .find((entry): entry is string => typeof entry === 'string');
+    if (value !== undefined) {
+      values[field] = value;
+    }
+  }
+  return values;
 }
